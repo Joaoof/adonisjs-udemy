@@ -33,7 +33,7 @@ test.group('User', (group) => {
         password: 'teste',
       })
       .expect(409)
-
+    console.log({ body })
     assert.exists(body.message)
     assert.exists(body.code)
     assert.exists(body.status)
