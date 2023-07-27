@@ -72,6 +72,7 @@ test.group('User', (group) => {
       .post('/users')
       .send({}) // logica aplicada em UsersController.ts --> linha 8
       .expect(422)
+    console.log({ body })
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)
   })
