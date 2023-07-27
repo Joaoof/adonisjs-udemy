@@ -10,6 +10,11 @@ export default class UsersController {
       'password',
       'avatar',
     ]) // Extrai os dados do usuário da requisição HTTP, incluindo o e-mail, nome de usuário, senha e avatar.
+
+    if (!userPayload.email || !userPayload.username || !userPayload.password)
+      // logica para caso não tenha email, username e password. Codigo referente a "users.spec.ts --> linha 73"
+      throw new BadRequestException('provide required data', 422)
+
     const userByEmail = await User.findBy('email', userPayload.email) // Procura no banco de dados se já existe um usuário com o mesmo e-mail fornecido na requisição.
     const userByUsername = await User.findBy('username', userPayload.username)
 

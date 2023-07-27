@@ -48,7 +48,7 @@ test.group('User', (group) => {
     assert.equal(body.status, 409)
   }) // Realiza várias asserções para verificar se o corpo da resposta possui as propriedades esperadas e se a mensagem de erro contém a palavra "email".
 
-  test.only('it should return 409 when username is already in use', async (assert) => {
+  test('it should return 409 when username is already in use', async (assert) => {
     const { username } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
       .post('/users')
@@ -65,6 +65,15 @@ test.group('User', (group) => {
     assert.include(body.message, 'username')
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 409)
+  })
+
+  test.only('it should return 422 when required data is not provided', async (assert) => {
+    const { body } = await supertest(BASE_URL)
+      .post('/users')
+      .send({}) // logica aplicada em UsersController.ts --> linha 14-17
+      .expect(422)
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
   })
 
   group.beforeEach(async () => {
