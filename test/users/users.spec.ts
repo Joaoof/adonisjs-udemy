@@ -70,7 +70,7 @@ test.group('User', (group) => {
   test.only('it should return 422 when required data is not provided', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/users')
-      .send({}) // logica aplicada em UsersController.ts --> linha 14-17
+      .send({}) // logica aplicada em UsersController.ts --> linha 8
       .expect(422)
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)
