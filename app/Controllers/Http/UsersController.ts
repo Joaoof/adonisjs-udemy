@@ -4,7 +4,12 @@ import User from 'App/Models/User'
 
 export default class UsersController {
   public async store({ request, response }: HttpContextContract) {
-    const userPayload = request.only(['email', 'username', 'password', 'avatar']) // Extrai os dados do usuário da requisição HTTP, incluindo o e-mail, nome de usuário, senha e avatar.
+    const userPayload = request.only([
+      'email',
+      'username',
+      'password',
+      'avatar',
+    ]) // Extrai os dados do usuário da requisição HTTP, incluindo o e-mail, nome de usuário, senha e avatar.
     const userByEmail = await User.findBy('email', userPayload.email) // Procura no banco de dados se já existe um usuário com o mesmo e-mail fornecido na requisição.
     const userByUsername = await User.findBy('username', userPayload.username)
 

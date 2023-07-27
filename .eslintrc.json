@@ -1,7 +1,3 @@
 {
-  "extends": ["plugin:adonis/typescriptApp", "prettier"],
-  "plugins": ["prettier"],
-  "rules": {
-    "prettier/prettier": ["error"]
-  }
+  "extends": "@rocketseat/eslint-config/node"
 }

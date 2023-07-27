@@ -1,7 +1,7 @@
-import Database from '@ioc:Adonis/Lucid/Database'; // Importa o módulo Database do Adonis.js para interagir com o banco de dados
-import { UserFactory } from 'Database/factories'; // importa a classe UserFactory do módulo Database/factories para criar usuários de teste
-import test from 'japa'; // importa a biblioteca Japa para escrever testes unitários
-import supertest from 'supertest'; //  importa a biblioteca supertest para fazer requisições HTTP durante os testes.
+import Database from '@ioc:Adonis/Lucid/Database' // Importa o módulo Database do Adonis.js para interagir com o banco de dados
+import { UserFactory } from 'Database/factories' // importa a classe UserFactory do módulo Database/factories para criar usuários de teste
+import test from 'japa' // importa a biblioteca Japa para escrever testes unitários
+import supertest from 'supertest' //  importa a biblioteca supertest para fazer requisições HTTP durante os testes.
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}` // Define a URL base da API com base nas variáveis de ambiente HOST e PORT.
 test.group('User', (group) => {
@@ -14,7 +14,10 @@ test.group('User', (group) => {
       password: 'teste',
       avatar: 'https://images.com/image/1',
     } // Define um objeto com os dados do usuário que será criado.
-    const { body } = await supertest(BASE_URL).post('/users').send(userPayload).expect(201)
+    const { body } = await supertest(BASE_URL)
+      .post('/users')
+      .send(userPayload)
+      .expect(201)
     console.log(body) // Faz uma requisição POST para a rota '/users' da API com os dados do usuário e espera que a resposta tenha o código 201 (Created). O corpo da resposta é armazenado na variável body e é exibido no console.
 
     assert.exists(body.user, 'User undefined')
@@ -48,12 +51,13 @@ test.group('User', (group) => {
   test.only('it should return 409 when username is already in use', async (assert) => {
     const { username } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
-    .post('/users')
-    .send({
-      email: 'teste@teste.com',
-      username,
-      password: "teste",
-    }).expect(409)
+      .post('/users')
+      .send({
+        email: 'teste@teste.com',
+        username,
+        password: 'teste',
+      })
+      .expect(409)
 
     assert.exists(body.message)
     assert.exists(body.code)
