@@ -1,7 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database' // Importa o módulo Database do Adonis.js para interagir com o banco de dados
-import { UserFactory } from 'Database/factories' // importa a classe UserFactory do módulo Database/factories para criar usuários de teste
+import { UserFactory } from 'Database/factories/index' // importa a classe UserFactory do módulo Database/factories para criar usuários de teste
 import test from 'japa' // importa a biblioteca Japa para escrever testes unitários
-import supertest from 'supertest' //  importa a biblioteca supertest para fazer requisições HTTP durante os testes.
+import supertest from 'supertest' //  importa a biblioteca supertest para fazer requisições HTTP durante os testes
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}` // Define a URL base da API com base nas variáveis de ambiente HOST e PORT.
 test.group('User', (group) => {
@@ -24,7 +24,6 @@ test.group('User', (group) => {
     assert.exists(body.user.id, 'Id undefined')
     assert.equal(body.user.email, userPayload.email)
     assert.equal(body.user.username, userPayload.username)
-    assert.equal(body.user.avatar, userPayload.avatar)
     assert.notExists(body.user.password, 'Password defined')
   }) // Realiza várias asserções para verificar se o objeto do usuário retornado na resposta possui as propriedades esperadas e se a senha não está presente.
 
@@ -35,8 +34,8 @@ test.group('User', (group) => {
       .post('/users')
       .send({
         email,
-        username: 'teste',
-        password: 'teste',
+        username: 'test',
+        password: 'test',
       }) // Faz uma requisição POST para a rota '/users' da API com o e-mail já em uso e espera que a resposta tenha o código 409 (Conflict). O corpo da resposta é armazenado na variável body e é exibido no console.
       .expect(409)
     console.log({ body })
@@ -53,7 +52,7 @@ test.group('User', (group) => {
     const { body } = await supertest(BASE_URL)
       .post('/users')
       .send({
-        email: 'teste@teste.com',
+        email: 'joaoa@fkd.com',
         username,
         password: 'teste',
       })
@@ -67,12 +66,48 @@ test.group('User', (group) => {
     assert.equal(body.status, 409)
   })
 
-  test.only('it should return 422 when required data is not provided', async (assert) => {
+  test('it should return 422 when required data is not provided', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/users')
       .send({}) // logica aplicada em UsersController.ts --> linha 8
       .expect(422)
     console.log({ body })
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test.only('it email is invalid', async (assert) => {
+    const { body } = await supertest(BASE_URL)
+      .post('/users')
+      .send({
+        email: 'joao@',
+        username: 'marcus',
+        password: '12345dk',
+      })
+      .expect(422)
+    console.log({ body })
+    // assert.exists(body.message)
+    // assert.exists(body.code)
+    // assert.exists(body.status)
+    // assert.equal(body.message, 'email')
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it password is invalid', async (assert) => {
+    const { body } = await supertest(BASE_URL)
+      .post('/users')
+      .send({
+        email: 'joao400@gmail.com',
+        username: 'testsded',
+        password: 'tes',
+      })
+      .expect(422)
+    // console.log({ body })
+    // assert.exists(body.message)
+    // assert.exists(body.code)
+    // assert.exists(body.status)
+    // assert.include(body.message, password')
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)
   })

@@ -1,31 +1,32 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { CustomMessages, rules, schema } from '@ioc:Adonis/Core/Validator'
 
 export default class CreateUserValidator {
+  // eslint-disable-next-line no-useless-constructor
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    email: schema.string({}, [
-      rules.email(),
-      rules.unique({ table: 'users', column: 'email' }),
-    ]),
-    username: schema.string({}, [
-      rules.email(),
-      rules.unique({ table: 'users', column: 'email' }),
-    ]),
-    password: schema.string({}, [rules.minLength(4)]),
+    email: schema.string({}, [rules.email(), rules.required()]),
+    username: schema.string({}, [rules.required()]),
+    password: schema.string({}, [rules.minLength(4), rules.required()]),
   })
 
   /**
-   * Custom messages for validation failures. You can make use of dot notation `(.)`
-   * for targeting nested fields and array expressions `(*)` for targeting all
-   * children of an array. For example:
-   *
-   * {
-   *   'profile.username.required': 'Username is required',
-   *   'scores.*.number': 'Define scores as valid numbers'
-   * }
-   *
+   * Custom messages for validation failures.
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'email.required': 'The email field is required.',
+    'email.email': 'Please enter a valid email address.',
+    'email.unique': 'This email is already in use.',
+
+    'username.required': 'The username field is required.',
+    'username.unique': 'This username is already in use.',
+
+    'password.minLength': 'The password must be at least 4 characters long.',
+
+    // Add more custom messages for other rules, if needed
+    // 'username.alpha': 'The username must only contain letters.',
+    // 'email.maxlength': 'The email must not exceed 255 characters.',
+    // ...
+  }
 }

@@ -18,8 +18,10 @@ export default class BadRequestException extends Exception {
   public code = 'BAD_REQUEST'
 
   public async handle(error: this, ctx: HttpContextContract) {
-    return ctx.response
-      .status(error.status)
-      .send({ code: error.code, message: error.message, status: error.status })
+    return ctx.response.status(error.status).send({
+      code: error.code,
+      message: error.message,
+      status: error.status,
+    })
   }
 }
