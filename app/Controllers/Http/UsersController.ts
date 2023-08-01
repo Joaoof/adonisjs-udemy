@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequest from 'App/Exceptions/BadRequestException'
 import User from 'App/Models/User'
 import CreateUserValidator from 'App/Validators/CreateUserValidator'
+import UpdateValidator from 'App/Validators/UpdateValidator'
 
 export default class UsersController {
   public async store({ request, response }: HttpContextContract) {
@@ -26,5 +27,24 @@ export default class UsersController {
     return response.created({
       user,
     }) // Retorna uma resposta HTTP com o código 201 (Created) e o objeto do usuário criado.
+  }
+
+  public async show({ params }: HttpContextContract) {
+    const user = await User.findOrFail(params.id)
+    return user
+  }
+
+  public async update({ request, response }: HttpContextContract) {
+    const { id, email, password, username } = await request.validate(
+      UpdateValidator,
+    )
+
+    const user = await User.findOrFail(id)
+
+    user.merge({ email, password, username })
+
+    await user.save()
+
+    return response.ok({ message: 'OK' })
   }
 }
