@@ -150,7 +150,9 @@ test.group('User', (group) => {
 
     assert.exists(body.user, 'User undefined') // precisa existir dentro da resposta um objeto user.
     assert.equal(body.user.id, user.id) //  se os valores retornados são iguais aos que eu atualizei.
-    assert.equal(user.password, 'test') //  se os valores retornados são iguais aos que eu atualizei.
+
+    await user.refresh() // atualiza a senha no banco de dados, para a nova senha
+    assert.isTrue(await Hash.verify(user.password, password))
   })
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
