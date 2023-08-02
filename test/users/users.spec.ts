@@ -2,6 +2,7 @@ import Database from '@ioc:Adonis/Lucid/Database' // Importa o módulo Database 
 import { UserFactory } from 'Database/factories/index' // importa a classe UserFactory do módulo Database/factories para criar usuários de teste
 import test from 'japa' // importa a biblioteca Japa para escrever testes unitários
 import supertest from 'supertest' //  importa a biblioteca supertest para fazer requisições HTTP durante os testes
+import User from 'App/Models/User'
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}` // Define a URL base da API com base nas variáveis de ambiente HOST e PORT.
 test.group('User', (group) => {
@@ -76,7 +77,7 @@ test.group('User', (group) => {
     assert.equal(body.status, 422)
   })
 
-  test.only('it email is invalid', async (assert) => {
+  test('it email is invalid', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/users')
       .send({
@@ -110,6 +111,32 @@ test.group('User', (group) => {
     // assert.include(body.message, password')
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)
+  })
+
+  test('it should update an user!', async (assert) => {
+    // Cria um usuário de teste no banco de dados usando a Factory ou inserindo manualmente.
+    const user = await UserFactory.create()
+
+    // Faz uma requisição PUT para a rota de atualização com os dados atualizados do usuário.
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${user.id}`)
+      .send({
+        id: '1',
+        email: 'newel@test.com',
+        username: 'newusername',
+        password: 'newp',
+      })
+      .expect(200)
+
+    // Verifica se a resposta tem o código 200
+
+    // Busca o usuário atualizado no banco de dados.
+    const updatedUserInDB = await User.findOrFail(user.id)
+
+    // Verifica se os dados do usuário foram atualizados corretamente.
+    assert.equal(updatedUserInDB.email, body.email)
+    assert.equal(updatedUserInDB.username, body.username)
+    // Note que não é recomendado verificar a senha diretamente nos testes, pois a senha normalmente é criptografada antes de ser salva no banco de dados. Em vez disso, você pode testar se a senha foi alterada ou se o usuário ainda pode fazer login com a nova senha.
   })
 
   group.beforeEach(async () => {

@@ -1,6 +1,7 @@
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 export default class AppProvider {
+  // eslint-disable-next-line no-useless-constructor
   constructor(protected app: ApplicationContract) {}
 
   public register() {

@@ -35,16 +35,22 @@ export default class UsersController {
   }
 
   public async update({ request, response }: HttpContextContract) {
-    const { id, email, password, username } = await request.validate(
-      UpdateValidator,
-    )
+    try {
+      const { id, email, password, username } = await request.validate(
+        UpdateValidator,
+      )
 
-    const user = await User.findOrFail(id)
+      const user = await User.findOrFail(id)
 
-    user.merge({ email, password, username })
+      user.merge({ email, password, username })
 
-    await user.save()
+      await user.save()
 
-    return response.ok({ message: 'OK' })
+      return response.ok(user)
+    } catch (error) {
+      // Aqui, você pode fazer o tratamento do erro e retornar uma resposta mais informativa ou logar o erro para depuração.
+      console.error(error)
+      return response.status(422).send({ error: 'Validation failed' })
+    }
   }
 }
