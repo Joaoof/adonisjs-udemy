@@ -123,6 +123,7 @@ test.group('User', (group) => {
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
       .send({
+        id,
         email,
         avatar,
         password,
@@ -133,6 +134,7 @@ test.group('User', (group) => {
     assert.equal(body.user.email, email) // se os valores retornados são iguais aos que eu atualizei
     assert.equal(body.user.avatar, avatar) //  se os valores retornados são iguais aos que eu atualizei
     assert.equal(body.user.id, id) //  se os valores retornados são iguais aos que eu atualizei.
+    console.log()
   })
 
   test('it should update the password of the user', async (assert) => {
@@ -142,6 +144,7 @@ test.group('User', (group) => {
     const { body } = await supertest(BASE_URL)
       .put(`/users/${user.id}`)
       .send({
+        id: user.id,
         email: user.email,
         avatar: user.avatar,
         password,
@@ -154,6 +157,59 @@ test.group('User', (group) => {
     await user.refresh() // atualiza a senha no banco de dados, para a nova senha
     assert.isTrue(await Hash.verify(user.password, password))
   })
+
+  test('it should return 422 when required data is not provided', async (assert) => {
+    const { id } = await UserFactory.create()
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${id}`)
+      .send({}) // logica aplicada em UsersController.ts --> linha 8
+      .expect(422)
+    console.log({ body })
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('User update email is invalid', async (assert) => {
+    const { id, avatar, password } = await UserFactory.create()
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${id}`)
+      .send({
+        email: 'o0',
+        avatar,
+        password,
+      }) // logica aplicada em UsersController.ts --> linha 8
+      .expect(422)
+    console.log({ body })
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('User update password is invalid', async (assert) => {
+    const { id, email, avatar } = await UserFactory.create()
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${id}`)
+      .send({
+        email,
+        avatar,
+        password: 'joaop13223',
+      }) // logica aplicada em UsersController.ts --> linha 8
+      .expect(422)
+    console.log({ body })
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('User update avatar is invalid', async (assert) => {
+    const { id, email, password } = await UserFactory.create()
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${id}`)
+      .send({ email, password, avatar: '234' }) // logica aplicada em UsersController.ts --> linha 8
+      .expect(422)
+    console.log({ body })
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
   })

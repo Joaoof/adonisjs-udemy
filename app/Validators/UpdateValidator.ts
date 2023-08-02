@@ -26,9 +26,9 @@ export default class UpdateValidator {
    */
   public schema = schema.create({
     id: schema.number(),
-    email: schema.string({}, [rules.email(), rules.required()]),
-    username: schema.string({}, [rules.required()]),
-    password: schema.string({}, [rules.minLength(4), rules.required()]),
+    email: schema.string({}, [rules.email()]),
+    avatar: schema.string.optional({}, [rules.url()]),
+    password: schema.string({}, [rules.minLength(4)]),
   })
 
   /**

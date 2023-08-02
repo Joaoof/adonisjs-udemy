@@ -30,11 +30,7 @@ export default class UsersController {
   }
 
   public async update({ request, response }: HttpContextContract) {
-    const { email, avatar, password } = request.only([
-      'email',
-      'avatar',
-      'password',
-    ]) // eu posso atualizar......
+    const { email, avatar, password } = await request.validate(UpdateValidator) // eu posso atualizar......
     const id = request.param('id') // esse 'id' representa o que esta na rota ---> routes.ts (Route.put('/users/:id', 'UsersController.update')
     const user = await User.findOrFail(id) // retorna o id do banco de dados (em que está meu user)
 
