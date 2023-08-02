@@ -2,7 +2,7 @@ import Database from '@ioc:Adonis/Lucid/Database' // Importa o módulo Database 
 import { UserFactory } from 'Database/factories/index' // importa a classe UserFactory do módulo Database/factories para criar usuários de teste
 import test from 'japa' // importa a biblioteca Japa para escrever testes unitários
 import supertest from 'supertest' //  importa a biblioteca supertest para fazer requisições HTTP durante os testes
-import User from 'App/Models/User'
+import Hash from '@ioc:Adonis/Core/Hash' // importação de atualização do password do user
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}` // Define a URL base da API com base nas variáveis de ambiente HOST e PORT.
 test.group('User', (group) => {
@@ -115,30 +115,43 @@ test.group('User', (group) => {
 
   test('it should update an user!', async (assert) => {
     // Cria um usuário de teste no banco de dados usando a Factory ou inserindo manualmente.
-    const user = await UserFactory.create()
+    const { id, password } = await UserFactory.create()
+    const email = 'seila@gmail.com'
+    const avatar = 'http://github.com/Joaoof.png'
 
+    // Faz uma requisição PUT para a rota de atualização com os dados atualizados do usuário.
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${id}`)
+      .send({
+        email,
+        avatar,
+        password,
+      })
+      .expect(200)
+
+    assert.exists(body.user, 'User undefined') // precisa existir dentro da resposta um objeto user.
+    assert.equal(body.user.email, email) // se os valores retornados são iguais aos que eu atualizei
+    assert.equal(body.user.avatar, avatar) //  se os valores retornados são iguais aos que eu atualizei
+    assert.equal(body.user.id, id) //  se os valores retornados são iguais aos que eu atualizei.
+  })
+
+  test('it should update the password of the user', async (assert) => {
+    const user = await UserFactory.create()
+    const password = 'teste'
     // Faz uma requisição PUT para a rota de atualização com os dados atualizados do usuário.
     const { body } = await supertest(BASE_URL)
       .put(`/users/${user.id}`)
       .send({
-        id: '1',
-        email: 'newel@test.com',
-        username: 'newusername',
-        password: 'newp',
+        email: user.email,
+        avatar: user.avatar,
+        password,
       })
       .expect(200)
 
-    // Verifica se a resposta tem o código 200
-
-    // Busca o usuário atualizado no banco de dados.
-    const updatedUserInDB = await User.findOrFail(user.id)
-
-    // Verifica se os dados do usuário foram atualizados corretamente.
-    assert.equal(updatedUserInDB.email, body.email)
-    assert.equal(updatedUserInDB.username, body.username)
-    // Note que não é recomendado verificar a senha diretamente nos testes, pois a senha normalmente é criptografada antes de ser salva no banco de dados. Em vez disso, você pode testar se a senha foi alterada ou se o usuário ainda pode fazer login com a nova senha.
+    assert.exists(body.user, 'User undefined') // precisa existir dentro da resposta um objeto user.
+    assert.equal(body.user.id, user.id) //  se os valores retornados são iguais aos que eu atualizei.
+    assert.equal(user.password, 'test') //  se os valores retornados são iguais aos que eu atualizei.
   })
-
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
   })

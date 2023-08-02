@@ -29,28 +29,20 @@ export default class UsersController {
     }) // Retorna uma resposta HTTP com o código 201 (Created) e o objeto do usuário criado.
   }
 
-  public async show({ params }: HttpContextContract) {
-    const user = await User.findOrFail(params.id)
-    return user
-  }
-
   public async update({ request, response }: HttpContextContract) {
-    try {
-      const { id, email, password, username } = await request.validate(
-        UpdateValidator,
-      )
+    const { email, avatar, password } = request.only([
+      'email',
+      'avatar',
+      'password',
+    ]) // eu posso atualizar......
+    const id = request.param('id') // esse 'id' representa o que esta na rota ---> routes.ts (Route.put('/users/:id', 'UsersController.update')
+    const user = await User.findOrFail(id) // retorna o id do banco de dados (em que está meu user)
 
-      const user = await User.findOrFail(id)
+    user.email = email
+    user.password = password
+    if (avatar) user.avatar = avatar // se o avatar for informado então pode atualizar
+    await user.save() // ele vai salvar as mudanças no banco de dados
 
-      user.merge({ email, password, username })
-
-      await user.save()
-
-      return response.ok(user)
-    } catch (error) {
-      // Aqui, você pode fazer o tratamento do erro e retornar uma resposta mais informativa ou logar o erro para depuração.
-      console.error(error)
-      return response.status(422).send({ error: 'Validation failed' })
-    }
+    return response.ok({ user })
   }
 }

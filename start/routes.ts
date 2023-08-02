@@ -25,7 +25,6 @@ Route.get('/', async () => {
 })
 
 Route.post('/users', 'UsersController.store')
-Route.get('/users/:id', 'UsersController.show')
 Route.put('/users/:id', 'UsersController.update')
 
 // Adicione outras rotas conforme necessário
