@@ -101,7 +101,7 @@ test.group('User', (group) => {
       .send({
         email: 'joao400@gmail.com',
         username: 'testsded',
-        password: 'tes',
+        password: 'te',
       })
       .expect(422)
     // console.log({ body })
@@ -123,7 +123,6 @@ test.group('User', (group) => {
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
       .send({
-        id,
         email,
         avatar,
         password,
@@ -144,7 +143,6 @@ test.group('User', (group) => {
     const { body } = await supertest(BASE_URL)
       .put(`/users/${user.id}`)
       .send({
-        id: user.id,
         email: user.email,
         avatar: user.avatar,
         password,
@@ -184,14 +182,14 @@ test.group('User', (group) => {
     assert.equal(body.status, 422)
   })
 
-  test('User update password is invalid', async (assert) => {
+  test.only('User update password is invalid', async (assert) => {
     const { id, email, avatar } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
       .send({
         email,
         avatar,
-        password: 'joaop13223',
+        password: 'joa',
       }) // logica aplicada em UsersController.ts --> linha 8
       .expect(422)
     console.log({ body })
