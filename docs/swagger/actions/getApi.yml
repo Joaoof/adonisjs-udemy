@@ -1,0 +1,12 @@
+/:
+  get:
+    tags:
+      - Home
+    description: Home
+
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Sucesso
+  

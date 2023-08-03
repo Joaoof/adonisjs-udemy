@@ -1,0 +1,47 @@
+/users/UsersController:
+  post:
+    tags:
+      - Register User
+    security:
+      - BearerAuth: []
+    description: Criar usuário
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            properties:
+              gener:
+                type: string
+                example: 'male'
+                required: true
+              title:
+                type: string
+                example: 'Mr'
+                required: true
+              first:
+                type: string
+                example: 'João'
+                required: true
+              last:
+                type: string
+                example: 'of God'
+                required: true
+              email:
+                type: string
+                example: 'joao@mail.com'
+                required: true
+
+              password:
+                type: string
+                example: '12345678'
+                required: true
+    produces:
+      - application/json
+    responses:
+      201:
+        description: Sucess
+      401:
+        description: UnauthorizedError
+      422:
+        description: Invalid

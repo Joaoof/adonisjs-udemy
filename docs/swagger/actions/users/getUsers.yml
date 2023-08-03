@@ -1,0 +1,15 @@
+/users:
+  get:
+    tags:
+      - Get Users
+    security:
+      - BearerAuth: []
+    description: List all the users
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Success
+
+      401:
+        $ref: "#/components/responses/UnauthorizedError"

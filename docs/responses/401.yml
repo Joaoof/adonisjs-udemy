@@ -1,0 +1,4 @@
+components:
+  responses:
+    UnauthorizedError:
+      description: Token de acesso ausente ou invalido

@@ -1,0 +1,13 @@
+components:
+  responses:
+    UnprocessableEntityError:
+      description: Dados invalidos
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationError'
