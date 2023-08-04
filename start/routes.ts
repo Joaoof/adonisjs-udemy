@@ -28,6 +28,6 @@ Route.get('/users/list', 'UsersController.show')
 Route.post('/users', 'UsersController.store')
 Route.put('/users/:id', 'UsersController.update')
 Route.post('/forgot-password', 'PasswordsController.forgotPassword')
-Route.delete('/users/delete/:id', 'UsersController.delete')
+Route.delete('/users/delete/:id', 'UsersController.destroy')
 
 // Adicione outras rotas conforme necessário

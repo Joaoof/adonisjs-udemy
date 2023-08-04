@@ -219,27 +219,25 @@ test.group('User', (group) => {
 
   test.only('it should delete in user', async (assert) => {
     const user = await UserFactory.create()
-
-    await supertest(BASE_URL)
+    console.log('passou aq')
+    const { body } = await supertest(BASE_URL)
       .post('/users')
       .send({
-        email: user.email,
-        username: user.username,
-        password: user.password, // Use a senha do usuário criado pelo UserFactory
+        email: 'joao777@gmail.com',
+        username: 'aleatorio9',
+        password: 'hashjdh',
       })
-      .expect(200)
+      .expect(201)
+    console.log({ body })
 
+    // Faça a solicitação DELETE para a rota '/users/delete/:id' usando o ID do usuário criado
+    console.log('passa, pelo amor de Deus')
     const response = await supertest(BASE_URL)
       .delete(`/users/delete/${user.id}`)
-      .send({
-        email: user.email,
-        username: user.username,
-        password: user.password,
-      })
-      .expect(200)
+      .expect(204)
 
-    assert.isEmpty(response.body)
-    // assert.isNotEmpty(response.body)
+    assert.equal(response.status, 204) // verificar se a resposta esta vazia
+    assert.isEmpty(response.body) // verifica se alguma coisa presente no body da apicação
   })
 
   group.beforeEach(async () => {

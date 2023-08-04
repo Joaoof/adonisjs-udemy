@@ -48,12 +48,11 @@ export default class UsersController {
     return response.ok({ user })
   }
 
-  public async delete({ request, response }: HttpContextContract) {
-    const id = request.param('id')
-    const user = await User.findOrFail(id)
+  public async destroy({ params, response }: HttpContextContract) {
+    const user = await User.findOrFail(params.id)
 
     await user.delete()
 
-    return response.ok({ user })
+    return response.noContent()
   }
 }
