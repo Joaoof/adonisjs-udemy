@@ -1,5 +1,5 @@
-/users/UsersController:
-  patch:
+/users/{id}:
+  put:
     tags:
       - Update User
     security:
@@ -20,9 +20,13 @@
         application/json:
           schema:
             properties:
+              id:
+                type: number
+                example: '1'
+                required: true
               email:
                 type: string
-                example: 'João'
+                example: 'João@gmail.com'
                 required: true
               password:
                 type: string

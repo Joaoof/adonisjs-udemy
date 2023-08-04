@@ -1,4 +1,4 @@
-/users/UsersController:
+/users:
   post:
     tags:
       - Register User
@@ -15,23 +15,14 @@
                 type: string
                 example: 'male'
                 required: true
-              title:
+              username:
                 type: string
-                example: 'Mr'
-                required: true
-              first:
-                type: string
-                example: 'João'
-                required: true
-              last:
-                type: string
-                example: 'of God'
+                example: 'mister_good'
                 required: true
               email:
                 type: string
-                example: 'joao@mail.com'
+                example: 'jo@mail.com'
                 required: true
-
               password:
                 type: string
                 example: '12345678'

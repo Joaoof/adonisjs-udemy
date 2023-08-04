@@ -5,6 +5,12 @@ import CreateUserValidator from 'App/Validators/CreateUserValidator'
 import UpdateValidator from 'App/Validators/UpdateValidator'
 
 export default class UsersController {
+  public async show({ response }: HttpContextContract) {
+    const users = await User.all()
+
+    return response.json(users) // listagem de users 
+  }
+
   public async store({ request, response }: HttpContextContract) {
     const userPayload = await request.validate(CreateUserValidator) // validação da criação do usuario, logica aplicada pelo validator (CreateUserValidator.ts), que serve em users.spec.ts linha 73
 
