@@ -8,7 +8,7 @@ const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}` // Define a UR
 test.group('User', (group) => {
   // Define um grupo de testes chamado "User".
 
-  test.only('it should list an user!', async (assert) => {
+  test('it should list an user!', async (assert) => {
     await UserFactory.create()
     const response = await supertest(BASE_URL).get('/users/list').expect(200)
 
@@ -215,6 +215,31 @@ test.group('User', (group) => {
     console.log({ body })
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)
+  })
+
+  test.only('it should delete in user', async (assert) => {
+    const user = await UserFactory.create()
+
+    await supertest(BASE_URL)
+      .post('/users')
+      .send({
+        email: user.email,
+        username: user.username,
+        password: user.password, // Use a senha do usuário criado pelo UserFactory
+      })
+      .expect(200)
+
+    const response = await supertest(BASE_URL)
+      .delete(`/users/delete/${user.id}`)
+      .send({
+        email: user.email,
+        username: user.username,
+        password: user.password,
+      })
+      .expect(200)
+
+    assert.isEmpty(response.body)
+    // assert.isNotEmpty(response.body)
   })
 
   group.beforeEach(async () => {
