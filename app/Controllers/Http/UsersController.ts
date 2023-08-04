@@ -8,7 +8,7 @@ export default class UsersController {
   public async show({ response }: HttpContextContract) {
     const users = await User.all()
 
-    return response.json(users) // listagem de users
+    return response.json({ users }) // listagem de users
   }
 
   public async store({ request, response }: HttpContextContract) {

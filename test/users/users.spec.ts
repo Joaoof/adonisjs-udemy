@@ -12,7 +12,7 @@ test.group('User', (group) => {
     await UserFactory.create()
     const response = await supertest(BASE_URL).get('/users/list').expect(200)
 
-    assert.isArray(response.body)
+    assert.isObject(response.body) // verificar se é um objeto
     assert.isNotEmpty(response.body)
   })
 
@@ -217,7 +217,7 @@ test.group('User', (group) => {
     assert.equal(body.status, 422)
   })
 
-  test.only('it should delete in user', async (assert) => {
+  test('it should delete in user', async (assert) => {
     const user = await UserFactory.create()
     console.log('passou aq')
     const { body } = await supertest(BASE_URL)
