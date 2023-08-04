@@ -33,18 +33,22 @@ test.group('Password', (group) => {
     Mail.restore()
   })
 
-  test('it should create a reset password token', async (assert) => {
-    const user = await UserFactory.create()
-    await supertest(BASE_URL)
-      .post('/forgot-password')
-      .send({
-        email: user.email,
-        resetPasswordUrl: 'url',
-      })
-      .expect(204)
+  test
+    .only('it should create a reset password token', async (assert) => {
+      const user = await UserFactory.create()
+      await supertest(BASE_URL)
+        .post('/forgot-password')
+        .send({
+          email: user.email,
+          resetPasswordUrl: 'url',
+        })
+        .expect(204)
 
-    user.related('tokens')
-  })
+      const tokens = await user.related('tokens').query()
+      console.log({ tokens })
+      assert.isNotEmpty(tokens)
+    })
+    .timeout(0)
 
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()

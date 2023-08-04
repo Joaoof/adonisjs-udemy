@@ -182,7 +182,7 @@ test.group('User', (group) => {
     assert.equal(body.status, 422)
   })
 
-  test.only('User update password is invalid', async (assert) => {
+  test('User update password is invalid', async (assert) => {
     const { id, email, avatar } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)

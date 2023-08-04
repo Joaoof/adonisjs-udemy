@@ -2,6 +2,8 @@
 import Mail from '@ioc:Adonis/Addons/Mail'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import { promisify } from 'util'
+import { randomBytes } from 'crypto'
 
 export default class PasswordsController {
   public async forgotPassword({ request, response }: HttpContextContract) {
@@ -10,6 +12,17 @@ export default class PasswordsController {
       'resetPasswordUrl',
     ])
     const user = await User.findByOrFail('email', email)
+
+    const random = await promisify(randomBytes)(24)
+    const token = random.toString('hex')
+    await user.related('tokens').updateOrCreate(
+      { userId: user.id },
+      {
+        token,
+      },
+    )
+
+    const resetPasswordUrlWithToken = `${resetPasswordUrl}?token=${token}`
     await Mail.send((message) => {
       message
         .from('joaodeus400@gmail.com')
@@ -20,7 +33,7 @@ export default class PasswordsController {
           {
             productName: 'Adonisjs',
             name: user.username,
-            resetPasswordUrl,
+            resetPasswordUrl: resetPasswordUrlWithToken,
           },
         )
     })

@@ -12,9 +12,9 @@ export default {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'Back-end-Challenge-2021',
+        title: 'Application with swagger docs',
         version: '1.0.0',
-        description: 'My Back-end-Challenge-2021 with swagger docs',
+        description: 'My application with swagger docs',
       },
     },
 
