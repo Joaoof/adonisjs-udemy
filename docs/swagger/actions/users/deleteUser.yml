@@ -1,0 +1,25 @@
+/users/delete/{id}:
+  delete:
+    tags:
+      - Delete User
+    security:
+      - BearerAuth: []
+    description: Delete User by id
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+          example: 2
+        required: true
+        description: ID user for delete
+
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Sucess
+      401:
+        description: UnauthorizedError
+      422:
+        description: Invalid

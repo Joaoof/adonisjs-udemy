@@ -7,6 +7,15 @@ import Hash from '@ioc:Adonis/Core/Hash' // importação de atualização do pas
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}` // Define a URL base da API com base nas variáveis de ambiente HOST e PORT.
 test.group('User', (group) => {
   // Define um grupo de testes chamado "User".
+
+  test.only('it should list an user!', async (assert) => {
+    await UserFactory.create()
+    const response = await supertest(BASE_URL).get('/users/list').expect(200)
+
+    assert.isArray(response.body)
+    assert.isNotEmpty(response.body)
+  })
+
   test('it should create an user!', async (assert) => {
     // Define um teste dentro do grupo "User" que verifica se um usuário é criado corretamente.
     const userPayload = {

@@ -8,7 +8,7 @@ export default class UsersController {
   public async show({ response }: HttpContextContract) {
     const users = await User.all()
 
-    return response.json(users) // listagem de users 
+    return response.json(users) // listagem de users
   }
 
   public async store({ request, response }: HttpContextContract) {
@@ -44,6 +44,15 @@ export default class UsersController {
     user.password = password
     if (avatar) user.avatar = avatar // se o avatar for informado então pode atualizar
     await user.save() // ele vai salvar as mudanças no banco de dados
+
+    return response.ok({ user })
+  }
+
+  public async delete({ request, response }: HttpContextContract) {
+    const id = request.param('id')
+    const user = await User.findOrFail(id)
+
+    await user.delete()
 
     return response.ok({ user })
   }
