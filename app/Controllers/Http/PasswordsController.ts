@@ -5,6 +5,8 @@ import User from 'App/Models/User'
 import { promisify } from 'util'
 import { randomBytes } from 'crypto'
 import ForgotPasswordValidator from 'App/Validators/ForgotPasswordValidator'
+import ResetPasswordValidator from 'App/Validators/ResetPasswordValidator'
+import TokenExpiredException from 'App/Exceptions/TokenExpiredException'
 
 export default class PasswordsController {
   public async forgotPassword({ request, response }: HttpContextContract) {
@@ -41,15 +43,21 @@ export default class PasswordsController {
   }
 
   public async resetPassword({ request, response }: HttpContextContract) {
-    const { token, password } = request.only(['token', 'password'])
+    const { token, password } = await request.validate(ResetPasswordValidator)
     const userByToken = await User.query()
       .whereHas('tokens', (query) => {
         query.where('token', token)
       })
+      .preload('tokens')
       .firstOrFail() //  "Retorne os registros da tabela 'User' que possuem relacionamentos com a tabela 'tokens' e que tenham um registro correspondente na tabela 'tokens' onde o campo 'token' seja igual ao valor da variável 'token'".
+    const tokenAge = Math.abs(
+      userByToken.tokens[0].createdAt.diffNow('hours').hours,
+    )
+    if (tokenAge > 2) throw new TokenExpiredException()
     console.log(userByToken)
     userByToken.password = password
     await userByToken.save()
+    await userByToken.tokens[0].delete()
     return response.noContent()
   }
 }

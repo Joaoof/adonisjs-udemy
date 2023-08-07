@@ -32,6 +32,14 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         // eslint-disable-next-line dot-notation
         errors: error['messages']?.errors ? error['messages'].errors : '',
       })
+    else if (error.code === 'E_ROW_NOT_FOUND')
+      return ctx.response.status(error.status).send({
+        code: 'BAD_REQUEST',
+        message: 'resource not found',
+        status: 404,
+        // eslint-disable-next-line dot-notation
+        errors: error['messages']?.errors ? error['messages'].errors : '',
+      })
     return super.handle(error, ctx)
   }
 }
