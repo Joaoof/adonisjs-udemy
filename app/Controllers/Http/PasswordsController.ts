@@ -39,4 +39,17 @@ export default class PasswordsController {
     })
     return response.noContent()
   }
+
+  public async resetPassword({ request, response }: HttpContextContract) {
+    const { token, password } = request.only(['token', 'password'])
+    const userByToken = await User.query()
+      .whereHas('tokens', (query) => {
+        query.where('token', token)
+      })
+      .firstOrFail() //  "Retorne os registros da tabela 'User' que possuem relacionamentos com a tabela 'tokens' e que tenham um registro correspondente na tabela 'tokens' onde o campo 'token' seja igual ao valor da variável 'token'".
+    console.log(userByToken)
+    userByToken.password = password
+    await userByToken.save()
+    return response.noContent()
+  }
 }

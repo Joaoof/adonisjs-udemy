@@ -1,3 +1,4 @@
+import Hash from '@ioc:Adonis/Core/Hash'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Database from '@ioc:Adonis/Lucid/Database'
 import { UserFactory } from 'Database/factories'
@@ -48,7 +49,7 @@ test.group('Password', (group) => {
     assert.isNotEmpty(tokens)
   }).timeout(0)
 
-  test.only('it should return 422 when required data is not provided or data is invalid', async (assert) => {
+  test('it should return 422 when required data is not provided or data is invalid', async (assert) => {
     const { body } = await supertest(BASE_URL)
       .post('/forgot-password')
       .send({})
@@ -56,6 +57,25 @@ test.group('Password', (group) => {
 
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)
+  })
+
+  test.only('it should be able to reset password', async (assert) => {
+    const user = await UserFactory.create()
+    const { token } = await user.related('tokens').create({
+      token: 'token',
+    })
+
+    await supertest(BASE_URL)
+      .post('/reset-password')
+      .send({ token, password: '1234' })
+      .expect(204)
+
+    console.log({ token })
+
+    await user.refresh()
+    const checkPassword = await Hash.verify(user.password, '1234') // verifico se é o valor que eu passei pra ele alterar!
+    assert.isTrue(checkPassword)
+    console.log({ checkPassword })
   })
 
   group.beforeEach(async () => {
