@@ -24,6 +24,8 @@ export default class ExceptionHandler extends HttpExceptionHandler {
   }
 
   public async handle(error: Exception, ctx: HttpContextContract) {
+    console.log(error)
+
     if (error.status === 422)
       return ctx.response.status(error.status).send({
         code: 'BAD_REQUEST',
@@ -39,6 +41,18 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         status: 404,
         // eslint-disable-next-line dot-notation
         errors: error['messages']?.errors ? error['messages'].errors : '',
+      })
+    else if (error.code === 'E_INVALID_AUTH_UID')
+      return ctx.response.status(error.status).send({
+        code: 'BAD_REQUEST',
+        message: 'invalid credentials',
+        status: 400,
+      })
+    else if (error.code === 'E_INVALID_AUTH_PASSWORD')
+      return ctx.response.status(error.status).send({
+        code: 'BAD_REQUEST',
+        message: 'invalid password',
+        status: 400,
       })
     return super.handle(error, ctx)
   }

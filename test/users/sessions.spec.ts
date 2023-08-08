@@ -20,7 +20,7 @@ test.group('Session', (group) => {
     assert.equal(body.user.id, id)
   })
 
-  test.only('it should return an api token when session is created', async (assert) => {
+  test('it should return an api token when session is created', async (assert) => {
     const plainPassword = 'test' // senha em texto puro
     const { id, email } = await UserFactory.merge({
       password: plainPassword,
@@ -33,6 +33,75 @@ test.group('Session', (group) => {
     assert.isDefined(body.token, 'Token undefined ')
     assert.equal(body.user.id, id)
   })
+
+  test('it should return 400 when credentials are not provided', async (assert) => {
+    const { body } = await supertest(BASE_URL)
+      .post('/sessions')
+      .send({})
+      .expect(400)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 400)
+  })
+
+  test('it should return 400 when credentials are invalid', async (assert) => {
+    const { email } = await UserFactory.create()
+    const { body } = await supertest(BASE_URL)
+      .post('/sessions')
+      .send({
+        email,
+        password: 'test',
+      })
+      .expect(400)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 400)
+    assert.equal(body.message, 'invalid password')
+  })
+
+  test('it should return 200 when user signs out', async () => {
+    const plainPassword = 'test' // senha em texto puro
+    const { email } = await UserFactory.merge({
+      password: plainPassword,
+    }).create()
+    const { body } = await supertest(BASE_URL)
+      .post('/sessions')
+      .send({ email, password: plainPassword })
+      .expect(201)
+    const apiToken = body.token
+
+    await supertest(BASE_URL)
+      .delete('/sessions')
+      .set('Authorization', `Bearer ${apiToken.token}`)
+      .expect(200)
+  }) // teste de logout
+
+  test('it should revoke token when user signs out', async (assert) => {
+    const plainPassword = 'test' // senha em texto puro
+    const { email } = await UserFactory.merge({
+      password: plainPassword,
+    }).create()
+    const { body } = await supertest(BASE_URL)
+      .post('/sessions')
+      .send({ email, password: plainPassword })
+      .expect(201)
+    const apiToken = body.token
+
+    const tokenBeforeSignout = await Database.query()
+      .select('*')
+      .from('api_tokens')
+    console.log({ tokenBeforeSignout })
+
+    await supertest(BASE_URL)
+      .delete('/sessions')
+      .set('Authorization', `Bearer ${apiToken.token}`)
+      .expect(200)
+
+    const token = await Database.query().select('*').from('api_tokens')
+
+    assert.isEmpty(token)
+  }) // teste de logout para renovação do token
+
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
   })

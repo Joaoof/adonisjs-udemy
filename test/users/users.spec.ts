@@ -5,6 +5,7 @@ import supertest from 'supertest' //  importa a biblioteca supertest para fazer 
 import Hash from '@ioc:Adonis/Core/Hash' // importação de atualização do password do user
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}` // Define a URL base da API com base nas variáveis de ambiente HOST e PORT.
+let token = ''
 test.group('User', (group) => {
   // Define um grupo de testes chamado "User".
 
@@ -131,6 +132,7 @@ test.group('User', (group) => {
     // Faz uma requisição PUT para a rota de atualização com os dados atualizados do usuário.
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
         email,
         avatar,
@@ -151,6 +153,7 @@ test.group('User', (group) => {
     // Faz uma requisição PUT para a rota de atualização com os dados atualizados do usuário.
     const { body } = await supertest(BASE_URL)
       .put(`/users/${user.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
         email: user.email,
         avatar: user.avatar,
@@ -169,7 +172,9 @@ test.group('User', (group) => {
     const { id } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
-      .send({}) // logica aplicada em UsersController.ts --> linha 8
+      .send({})
+      .set('Authorization', `Bearer ${token}`)
+      // logica aplicada em UsersController.ts --> linha 8
       .expect(422)
     console.log({ body })
     assert.equal(body.code, 'BAD_REQUEST')
@@ -180,6 +185,7 @@ test.group('User', (group) => {
     const { id, avatar, password } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
         email: 'o0',
         avatar,
@@ -195,6 +201,7 @@ test.group('User', (group) => {
     const { id, email, avatar } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
         email,
         avatar,
@@ -210,6 +217,7 @@ test.group('User', (group) => {
     const { id, email, password } = await UserFactory.create()
     const { body } = await supertest(BASE_URL)
       .put(`/users/${id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ email, password, avatar: '234' }) // logica aplicada em UsersController.ts --> linha 8
       .expect(422)
     console.log({ body })
@@ -238,6 +246,19 @@ test.group('User', (group) => {
 
     assert.equal(response.status, 204) // verificar se a resposta esta vazia
     assert.isEmpty(response.body) // verifica se alguma coisa presente no body da apicação
+  })
+
+  group.before(async () => {
+    const plainPassword = 'test'
+    const { email } = await UserFactory.merge({
+      password: plainPassword,
+    }).create()
+    const { body } = await supertest(BASE_URL)
+      .post('/sessions')
+      .send({ email, password: plainPassword })
+      .expect(201)
+
+    token = body.token.token
   })
 
   group.beforeEach(async () => {
