@@ -35,10 +35,12 @@ export default class UsersController {
     }) // Retorna uma resposta HTTP com o código 201 (Created) e o objeto do usuário criado.
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ request, response, bouncer }: HttpContextContract) {
     const { email, avatar, password } = await request.validate(UpdateValidator) // eu posso atualizar......
     const id = request.param('id') // esse 'id' representa o que esta na rota ---> routes.ts (Route.put('/users/:id', 'UsersController.update')
     const user = await User.findOrFail(id) // retorna o id do banco de dados (em que está meu user)
+
+    await bouncer.authorize('updateUser', user)
 
     user.email = email
     user.password = password

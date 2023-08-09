@@ -1,15 +1,19 @@
-# services:
-#   database:
-#     image: postgres
-#     platform: linux/x86_64
-#     container_name: bootcamp_cataline
-#     restart: always
-#     environment:
-#       PG_HOST: 127.0.0.1
-#       PG_PORT: 5432
-#       PG_USER: postgres
-#       POSTGRES_HOST_AUTH_METHOD: trust
-#       PG_PASSWORD: senha123
-#       PG_DB_NAME: adonis
-#     ports:
-#       - '5432:5432'
+version: '3.8'
+
+services:
+  adonis_app:
+    container_name: adonis_app
+    restart: always
+    build:
+      context: .
+      target: dependencies
+    ports:
+      - ${PORT}:${PORT}
+      - 9229:9229
+    env_file:
+      - .env
+    volumes:
+      - ./:/home/node/app
+      # Uncomment the below line if you developing on MacOS
+      #- /home/node/app/node_modules
+    command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
