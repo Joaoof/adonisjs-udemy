@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adonis-kub-projeto
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adonis-kub-projeto
+  template:
+    metadata:
+      labels:
+        app: adonis-kub-projeto
+    spec:
+      containers:
+      - name: adonis-kub-projeto
+        image: joaoof/adonis-kub-projeto:latest
+        ports:
+        - containerPort: 80
+        env:
+          - name: PORT
+            value: "3001"
+          - name: HOST
+            value: "0.0.0.0"
+          - name: NODE_ENV
+            value: "development"
+          - name: APP_KEY
+            value: "zmySFzSMOgVl-c91euBqzLjYb0EheK6z"
+          - name: DRIVE_DISK
+            value: "local"
+          - name: CACHE_VIEWS
+            value: "false"
+          - name: SMTP_HOST
+            value: "sandbox.smtp.mailtrap.io"
+          - name: SMTP_PORT
+            value: "587"
+          - name: SMTP_USERNAME
+            value: "4cd40d834b414c"
+          - name: SMTP_PASSWORD
+            value: "a96f084db232e7"
+          - name: DB_CONNECTION
+            value: "pg"

@@ -5,7 +5,7 @@ export default class SessionsController {
   public async store({ request, response, auth }: HttpContextContract) {
     const { email, password } = request.only(['email', 'password'])
     const token = await auth.use('api').attempt(email, password, {
-      expiresIn: '2hours',
+      expiresIna: '2hours',
     })
 
     return response.created({ user: auth.user, token })

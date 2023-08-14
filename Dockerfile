@@ -17,13 +17,11 @@ RUN node ace build --production --ignore-ts-errors
 
 FROM base AS production
 ENV NODE_ENV=production
-ENV APP_KEY=zmySFzSMOgVl-c91euBqzLjYb0EheK6z
-ENV DRIVE_DISK=local
-ENV DB_CONNECTION=sqlite
-# ENV PORT=3333
-# ENV HOST=0.0.0.0
+ENV PORT=$PORT
+ENV HOST=$HOST
+RUN npm install sqlite3 -y
 COPY --chown=node:node ./package*.json ./
 RUN npm ci --production
 COPY --chown=node:node --from=build /home/node/app/build .
-EXPOSE 5000
+EXPOSE $PORT
 CMD [ "dumb-init", "node", "server.js" ]
