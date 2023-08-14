@@ -41,3 +41,13 @@ spec:
             value: "a96f084db232e7"
           - name: DB_CONNECTION
             value: "pg"
+          - name: PG_HOST
+            value: "localhost"
+          - name: PG_PORT
+            value: "5432"
+          - name: PG_USER
+            value: "bhayron"
+          - name: PG_PASSWORD
+            value: "secret123"
+          - name: PG_DB_NAME
+            value: "sistema"

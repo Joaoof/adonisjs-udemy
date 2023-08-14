@@ -13,15 +13,16 @@ RUN npm ci
 COPY --chown=node:node . .
 
 FROM dependencies AS build
-RUN node ace build --production --ignore-ts-errors
+RUN node ace build --production
 
 FROM base AS production
 ENV NODE_ENV=production
 ENV PORT=$PORT
-ENV HOST=$HOST
-RUN npm install sqlite3 -y
+ENV HOST=0.0.0.0
 COPY --chown=node:node ./package*.json ./
-RUN npm ci --production
+RUN npm ci --production 
 COPY --chown=node:node --from=build /home/node/app/build .
 EXPOSE $PORT
+
+COPY . .
 CMD [ "dumb-init", "node", "server.js" ]

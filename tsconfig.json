@@ -34,6 +34,8 @@
       "adonis5-swagger",
       "@adonisjs/auth",
       "@adonisjs/bouncer"
-    ]
+    ],
+    "module": "es6",
+    "esModuleInterop": true
   }
 }

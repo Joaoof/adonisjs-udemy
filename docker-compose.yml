@@ -9,30 +9,29 @@ services:
       target: dependencies
     ports:
       - ${PORT}:${PORT}
+      - 9229:9229
     env_file:
       - .env
     volumes:
-      -  ./:/home/node/app
-    depends_on:
-      - database
-
+      - ./:/home/node/app
       # Uncomment the below line if you dome/joao/Documentoseveloping on MacOS
       #- /home/node/app/node_modules
     command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
-  database:
-    image: mysql
-    platform: linux/x86_64
-    container_name: bootcamp_cataline
-    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - minha-rede
+  db:
+    image: postgres
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 'secret'
-      MYSQL_DATABASE: 'adonis'
+      POSTGRES_PASSWORD: secret123
+      POSTGRES_USER: bhayron
+      POSTGRES_DB: sistema
+    expose:
+      - "5432"
     ports:
-      - '3306:3307'
-  adminer:
-    image: adminer
-    ports:
-      - '8080:8080'
-    depends_on:
-      - database
+      - 5432:5432
+    networks:
+      - minha-rede
+networks:
+   minha-rede:
+    driver: bridge
